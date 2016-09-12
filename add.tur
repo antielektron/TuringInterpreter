@@ -1,0 +1,106 @@
+#!./TuringInterpreter.py
+#
+#Ein Turingprogramm, das zwei Binärcodierte zahlen
+#miteinander addiert
+
+k = 4;
+S = start;
+F = end;
+I = 101001+110;
+
+
+#init:
+$start,$$$$,readFirst,$$$$,rrrr;
+
+#lese erste Zahl ein und schreibe die auf das 2. Band:
+$readFirst,1***,readFirst,11**,rrnn;
+$readFirst,0***,readFirst,00**,rrnn;
+$readFirst,+***,readSecond,****,rnnn;
+
+#lese zweite Zahl ein und schreibe die auf das 3. Band:
+$readSecond,1***,readSecond,1*1*,rnrn;
+$readSecond,0***,readSecond,0*0*,rnrn;
+$readSecond,_***,clear,****,nnnn;
+
+#Lösche das erste band:
+$clear,$***,add,$***,rlln;
+$clear,****,clear,_***,lnnn;
+
+#-------------------------------------------------------------------------------
+
+#und addiere. Konkret: laufe auf Band 2 und 3 rückwärts die Zahlen
+# ab und schreibe das ergebnis in rückwärtiger Schreibweise
+# auf das dritte Band.
+# dabei gibt es folgende Möglichkeiten:
+
+# 1. wir haben bei beiden inputs gerade eine null und keinen Übertrag
+#       vorher gehabt:
+
+$add,*00_,add,*000,nllr;
+
+# 2. wir haben bei beiden inputs gerade eine null und haben einen Übertrag:
+$add,*001,add,*001,nllr;
+
+# 3. beide inputs verschieden ohne übertrag vorher:
+
+$add,*10_,add,*101,nllr;
+$add,*01_,add,*011,nllr;
+
+# 4. beide inputs verschieden mit übertrag vorher:
+
+$add,*101,overflow,*100,nllr;
+$add,*011,overflow,*010,nllr;
+
+# 5. beide inputs gleich 1 ohne übertrag:
+
+$add,*11_,overflow,*110,nllr;
+
+# 6. beide inputs 1 mit übertrag vorher:
+$add,*111,overflow,*111,nllr;
+
+# 7. wir sind am ende von einem band (dann juss nur noch der inhalt vom anderen
+# angehängt werden):
+$add,*$**,addSecondInput,*$**,nnnn;
+$add,**$*,addFirstInput,**$*,nnnn;
+
+#-------------------------------------------------------------------------------
+
+# anhängeFunktionen:
+#sind wir fertig?
+$addSecondInput,**$*,copyResult,**$*,nnnn;
+#haben wir overflow?
+$addSecondInput,**01,addSecondInput,**01,nnlr;
+$addSecondInput,**11,overflow2,**10,nnlr;
+#sonst:
+$addSecondInput,**0_,addSecondInput,**00,nnlr;
+$addSecondInput,**1_,addSecondInput,**11,nnlr;
+
+#-------------------------------------------------------------------------------
+
+# anhängeFunktionen:
+#sind wir fertig?
+$addFirstInput,*$**,copyResult,*$**,nnnn;
+#haben wir overflow?
+$addFirstInput,*0*1,addFirstInput,*0*1,nlnr;
+$addFirstInput,*1*1,overflow1,*1*0,nlnr;
+#sonst:
+$addFirstInput,*0*_,addFirstInput,*0*0,nlnr;
+$addFirstInput,*1*_,addFirstInput,*1*1,nlnr;
+
+#-------------------------------------------------------------------------------
+
+#overflow funktionen:
+
+$overflow,****,add,***1,nnnn;
+$overflow1,****,addFirstInput,***1,nnnn;
+$overflow2,****,addSecondInput,***1,nnnn;
+
+#-------------------------------------------------------------------------------
+
+#und schreibe Ergebnis auf das erste Band:
+
+$copyResult,***$,end,***$,nnnn;
+$copyResult,***1,copyResult,1**1,rnnl;
+$copyResult,***0,copyResult,0**0,rnnl;
+$copyResult,***_,copyResult,***_,nnnl;
+

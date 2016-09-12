@@ -1,0 +1,42 @@
+#!./TuringInterpreter.py
+#
+# dies ist ein Beispielprogramm für die Turingmaschine
+# (Hinweis: Kommentarzeilen können mit einer führenden Raute eingeleitet werden)
+#
+# Dieses Programm kann mit dem Python-Skript "TuringInterpreter.py" für einen beliebigen Input-String via 
+#
+#           "python TuringInterpreter.py <TuringProgramFile.tur> <InputString>"
+#
+# ausgeführt werden. der InputString wird dabei auf das oberste Band geschrieben 
+#
+# Folgendes Turingprogramm prüft, ob eine eingabe Element
+# der Sprache L = {a^n b^n c^n} ist. Es schreibt eine 1
+# auf das erste Band, falls das Wort akzeptiert wird,
+# und 0 sonst.
+
+k = 4;
+F = finalState;
+S = start;
+I = aaaaaabbbbbbcccccc;
+
+$start, $$$$, init , $$$$, rrrr;
+$init,****,a,*!!!,nrrr;
+$a , a*** , a , aa** ,rrnn;
+$a , b*** , b , b*** ,nnnn;
+$b , b*** , b , b*b* ,rnrn;
+$b , c*** , c , c*** ,nnnn;
+$c , c*** , c , c**c ,rnnr;
+$c , _*** , counting , _*** ,llll;
+$counting , *abc , counting , *abc , nlll;
+$counting , *!** , checkCounter , *!** , nnnn;
+$counting , **!* , checkCounter , **!* , nnnn;
+$counting , ***! , checkCounter , ***! , nnnn;
+$checkCounter , *!!! , wordAccepted,*!!!,nnnn;
+$checkCounter , **** , wordNotAccepted,****,nnnn;
+$wordAccepted , $*** , write1,$***,rnnn;
+$wordAccepted , **** , wordAccepted,_***,lnnn;
+$write1 , **** , finalState , 1*** ,nnnn;
+$wordNotAccepted , $*** , write0 , $*** ,rnnn;
+$wordNotAccepted , **** , wordNotAccepted , _*** ,lnnn;
+$write0 , **** , finalState , 0*** ,nnnn;
+

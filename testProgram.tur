@@ -1,0 +1,108 @@
+#!./TuringInterpreter.py
+#
+# dies ist ein Beispielprogramm für die Turingmaschine
+# (Hinweis: Kommentarzeilen können mit einer führenden Raute eingeleitet werden)
+#
+# Dieses Programm kann mit dem Python-Skript "TuringInterpreter.py" für einen beliebigen Input-String via 
+#
+#           "python TuringInterpreter.py <TuringProgramFile.tur> <InputString>"
+#
+# ausgeführt werden. der InputString wird dabei auf das oberste Band geschrieben 
+#
+# Folgendes Turingprogramm prüft, ob eine eingabe Element
+# der Sprache L = {a^n b^n c^n} ist. Es schreibt eine 1
+# auf das erste Band, falls das Wort akzeptiert wird,
+# und 0 sonst.
+
+# definiere die Anzahl der Bänder:
+
+k = 4;
+
+# definiere Endzustand. Es können alternativ auch mehrere Enzustände (durch Kommata getrennt)
+# angegeben werden
+
+F = finalState;
+
+# definiere Startzustand
+
+S = start;
+
+# definiere einen default input String, der benutzt wird, falls beim Programmaufruf
+# keiner angegeben wird:
+
+I = aaaaaabbbbbbcccccc;
+
+
+# definiere Zustandsübergänge:
+# Ein Zustandsübergang wird mit einem '$' eingeleitet und besteht durch Kommata getrennt aus folgenden Werten:
+# 
+#   1.  Ausgangszustand
+#
+#   2.  Zeichen unter den Lese-/Schreibköpfen vor dem Zustandswechsel.
+#       '*' kann hier als Platzhalter genutzt werden, um jedes beliebige Zeichen zu akzeptieren
+#   
+#   3.  Zustand, zu dem gewechselt werden soll
+#
+#   4.  Zeichen, die auf die Bänder geschrieben werden sollen.
+#       '*' bewirkt hier, dass kein Zeichen geschrieben wird
+#       (oder anders interpretiert: Es wird exakt das Zeichen geschrieben, 
+#       das vorher gelesen wurde)
+#
+#   5.  Anschließende Bewegungen der Lese-/Schreibköpfe. Zu verwenden ist folgende Notation:
+#       
+#       n:  keine Bewegung
+#       l:  Bewegung um ein Feld nach links
+#       r:  Bewegung um ein Feld nach rechts
+#
+# Und noch ein Hinweis: die Turingmaschine sucht in der Reihenfolge nach dem richtigen Übergang,
+# wie sie in der Programmdatei angegeben wurden. Das lässt sich in Verbindung mit Platzhaltern
+# prima nutzen um if-else verzweigungen zu generieren, ohne dass dabei alle theoretisch denkbaren
+# Zeichenkombinationen als eigener Zustandsübergang angegeben werden müssen ;)
+
+
+# am Anfang stehen alle Köpfe auf dem $-Zeichen, dass immer am Anfang jedes Bandes steht, also
+# bewegen wir alle Köpfe einen Schritt nach rechts:
+$start, $$$$, init , $$$$, rrrr;
+
+# die unteren drei köpfe schreiben ein !. (um nachher zu sehen, wo sie starteten):
+$init,****,a,*!!!,nrrr;
+
+# lese alle a-s auf dem ersten Band ein: (und schreibe exakt so viele auf das zweite Band):
+$a , a*** , a , aa** ,rrnn;
+$a , b*** , b , b*** ,nnnn;
+$a , **** , badInput, ****, nnnn;
+
+# verfahre genauso mit b:
+$b , b*** , b , b*b* ,rnrn;
+$b , c*** , c , c*** ,nnnn;
+$b , **** , badInput, ****, nnnn;
+
+# und mit c:
+$c , c*** , c , c**c ,rnnr;
+$c , _*** , counting , _*** ,llll;
+$c , **** , badInput, ****, nnnn;
+
+# lasse die unteren drei köpfe zurücklaufen, bis einer auf das ! trifft:
+$counting , *abc , counting , *abc , nlll;
+$counting , *!** , checkCounter , *!** , nnnn;
+$counting , **!* , checkCounter , **!* , nnnn;
+$counting , ***! , checkCounter , ***! , nnnn;
+
+# sind alle beim Ausrufezeichen?
+$checkCounter , *!!! , wordAccepted,*!!!,nnnn;
+$checkCounter , **** , wordNotAccepted,****,nnnn;
+
+# falls ja: löschen wir alles auf dem ersten Band und schreiben eine 1
+$wordAccepted , $*** , write1,$***,rnnn;
+$wordAccepted , **** , wordAccepted,_***,lnnn;
+$write1 , **** , finalState , 1*** ,nnnn;
+
+# falls nein: löschen wir alles auf dem ersten Band und schreiben eine 0
+$wordNotAccepted , $*** , write0 , $*** ,rnnn;
+$wordNotAccepted , **** , wordNotAccepted , _*** ,lnnn;
+$write0 , **** , finalState , 0*** ,nnnn;
+
+# hilfsfunktion, um das Band auch nach vornehin zu löschen:
+$badInput, _***, wordNotAccepted, _****, nnnn;
+$badInput, ****, badInput, _***, rnnn;
+

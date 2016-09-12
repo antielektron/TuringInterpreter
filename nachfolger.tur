@@ -1,0 +1,15 @@
+#!./TuringInterpreter.py
+k = 1;
+S = start;
+F = end;
+I = 0100101011;
+
+$start,$,runToEnd,$,r;
+
+#laufe ans ende der eingabe:
+$runToEnd,_,addOne,_,l;
+$runToEnd,*,runToEnd,*,r;
+
+#addiere eins:
+$addOne,0,end,1,l;
+$addOne,1,addOne,0,l;
